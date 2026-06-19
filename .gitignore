@@ -1,0 +1,29 @@
+# PHP
+*.php~
+*.phtml
+php_errors.log
+
+# Config files with sensitive info
+config/database.php
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database backups
+*.sql.bak
+*.dump
+
+# Local environment
+.env
+.env.local
+
+# Cache
+*.cache

@@ -384,7 +384,7 @@ $activeFactTable = $_GET['fact_table'] ?? (!empty($factTables) ? $factTables[0][
 
             const params = { fact_table: factTable, group_by: groupBy, aggregation: aggregation };
 
-            $.getJSON('/DWH/api/charts.php', params, function(data) {
+            $.getJSON('/api/charts.php', params, function(data) {
                 // Map groupBy key to correct JSON dataset key
                 lastFullDataset = [];
                 if (groupBy === 'category') lastFullDataset = data.category_comparison || [];

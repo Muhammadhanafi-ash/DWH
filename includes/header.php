@@ -48,9 +48,9 @@ $userInitials = substr($userInitials, 0, 2);
     <!-- ApexCharts JS -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Custom CSS -->
-    <link href="/DWH/assets/css/style.css" rel="stylesheet">
+    <link href="/assets/css/style.css" rel="stylesheet">
     <!-- Dark Mode Initializer -->
-    <script src="/DWH/assets/js/darkmode.js"></script>
+    <script src="/assets/js/darkmode.js"></script>
 </head>
 <body>
 
@@ -59,7 +59,7 @@ $userInitials = substr($userInitials, 0, 2);
         <!-- Sidebar -->
         <aside id="sidebar">
             <div class="sidebar-header">
-                <a href="/DWH/dashboard/index.php" class="sidebar-logo">
+                <a href="/dashboard/index.php" class="sidebar-logo">
                     <i class="fa-solid fa-chart-line"></i>
                     <span>DWH PORTAL</span>
                 </a>
@@ -67,7 +67,7 @@ $userInitials = substr($userInitials, 0, 2);
             
             <ul class="sidebar-menu">
                 <li class="menu-item <?php echo isPageActive('/dashboard/'); ?>">
-                    <a href="/DWH/dashboard/index.php" class="menu-link">
+                    <a href="/dashboard/index.php" class="menu-link">
                         <i class="fa-solid fa-house"></i>
                         <span>Dashboard Utama</span>
                     </a>
@@ -75,28 +75,28 @@ $userInitials = substr($userInitials, 0, 2);
                 
 
                 <li class="menu-item <?php echo isPageActive('/visualization/'); ?>">
-                    <a href="/DWH/visualization/index.php" class="menu-link">
+                    <a href="/visualization/index.php" class="menu-link">
                         <i class="fa-solid fa-chart-pie"></i>
                         <span>Visualisasi Data</span>
                     </a>
                 </li>
                 
                 <li class="menu-item <?php echo isPageActive('/analytics/'); ?>">
-                    <a href="/DWH/analytics/index.php" class="menu-link">
+                    <a href="/analytics/index.php" class="menu-link">
                         <i class="fa-solid fa-brain"></i>
                         <span>Analytics & Insights</span>
                     </a>
                 </li>
                 
                 <li class="menu-item <?php echo isPageActive('/reports/'); ?>">
-                    <a href="/DWH/reports/index.php" class="menu-link">
+                    <a href="/reports/index.php" class="menu-link">
                         <i class="fa-solid fa-file-invoice-dollar"></i>
                         <span>Export & Reports</span>
                     </a>
                 </li>
                 
                 <li class="menu-item" style="border-top: 1px solid rgba(255,255,255,0.08); margin-top: 1rem; padding-top: 1rem;">
-                    <a href="/DWH/logout.php" class="menu-link" style="color: rgba(255,255,255,0.6);">
+                    <a href="/logout.php" class="menu-link" style="color: rgba(255,255,255,0.6);">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <span>Keluar (Logout)</span>
                     </a>
@@ -165,7 +165,7 @@ $userInitials = substr($userInitials, 0, 2);
                             </div>
                         </div>
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" aria-labelledby="userMenuBtn" style="border-radius: var(--radius-md);">
-                            <li><a class="dropdown-item py-2 px-3" href="/DWH/logout.php"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item py-2 px-3" href="/logout.php"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
                         </ul>
                     </div>
                 </div>

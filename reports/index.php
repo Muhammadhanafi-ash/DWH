@@ -168,7 +168,7 @@ try {
                 serverSide: true,
                 pageLength: 15,
                 ajax: {
-                    url: '/DWH/api/tables.php',
+                    url: '/api/tables.php',
                     type: 'POST',
                     data: function(d) {
                         return $.extend({}, d, getReportFilters());
@@ -236,7 +236,7 @@ try {
             const params = getReportFilters();
             
             // Query api/kpis.php to fetch headers metadata first
-            $.getJSON('/DWH/api/kpis.php', params, function(data) {
+            $.getJSON('/api/kpis.php', params, function(data) {
                 initReportDataTable(data.columns);
             }).fail(function() {
                 toggleReportLoading(false);

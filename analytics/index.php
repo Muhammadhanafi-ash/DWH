@@ -297,7 +297,7 @@ try {
             const params = getFilterParams();
 
             // 1. Fetch Insights & Stats
-            $.getJSON('/DWH/api/insights.php', params, function(data) {
+            $.getJSON('/api/insights.php', params, function(data) {
                 // Update stats UI
                 const isSales = params.fact_table === 'fact_sales' || params.fact_table === 'fact_store_performance';
                 
@@ -325,7 +325,7 @@ try {
             });
 
             // 2. Fetch Chart datasets
-            $.getJSON('/DWH/api/charts.php', params, function(data) {
+            $.getJSON('/api/charts.php', params, function(data) {
                 // 1) Top 10 item chart (Top film or Category)
                 if (data.top_films && data.top_films.length > 0) {
                     const top10 = data.top_films.slice(0, 10);

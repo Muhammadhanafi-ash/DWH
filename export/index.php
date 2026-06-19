@@ -7,5 +7,5 @@ require_once __DIR__ . '/../includes/auth.php';
 checkAuth();
 
 // Redirect to reports page which contains full DataTable export buttons
-header("Location: /DWH/reports/index.php");
+header("Location: /reports/index.php");
 exit;

@@ -126,7 +126,7 @@ Exception: None
 Log:
 Getting Git version... OK
 Git version is '2.46.1.windows.1'
-Locating current repository...Git repository at 'C:/xampp/htdocs/DWH/.git'
+Locating current repository...Git repository at 'C:/xampp/htdocs/.git'
  OK
 Listing all Git configuration... OK
 Git configuration:

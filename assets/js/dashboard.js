@@ -72,7 +72,7 @@ $(document).ready(function () {
             serverSide: true,
             pageLength: 10,
             ajax: {
-                url: '/DWH/api/tables.php',
+                url: '/api/tables.php',
                 type: 'POST',
                 data: function (d) {
                     // Merge filter parameters
@@ -241,7 +241,7 @@ $(document).ready(function () {
     // Populate chart datasets via AJAX
     function updateCharts() {
         const params = getFilterParams();
-        $.getJSON('/DWH/api/charts.php', params, function (data) {
+        $.getJSON('/api/charts.php', params, function (data) {
             const theme = document.documentElement.getAttribute('data-bs-theme') || 'light';
             const labelColor = theme === 'dark' ? '#94a3b8' : '#64748b';
             
@@ -371,7 +371,7 @@ $(document).ready(function () {
         const params = getFilterParams();
 
         // Fetch KPIs
-        $.getJSON('/DWH/api/kpis.php', params, function (data) {
+        $.getJSON('/api/kpis.php', params, function (data) {
             // Update Card values
             $('#kpi-total-data').text(data.total_data.toLocaleString());
             $('#kpi-total-fact').text(data.total_fact.toLocaleString());
@@ -425,7 +425,7 @@ $(document).ready(function () {
             updateCharts();
             
             // Update KPIs count
-            $.getJSON('/DWH/api/kpis.php', getFilterParams(), function (data) {
+            $.getJSON('/api/kpis.php', getFilterParams(), function (data) {
                 $('#kpi-total-trans').text(data.total_transactions.toLocaleString());
                 if (data.metric_label) {
                     if (data.metric_value > 0) {

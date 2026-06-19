@@ -1,0 +1,11 @@
+{
+    "name": "enterprise/dwh-dashboard",
+    "description": "Enterprise DWH Dashboard",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "ext-pdo": "*",
+        "ext-pdo_pgsql": "*",
+        "ext-pgsql": "*"
+    }
+}

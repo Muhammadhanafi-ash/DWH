@@ -3,13 +3,15 @@
  * Enterprise DWH Dashboard - Login Page
  */
 
+require_once __DIR__ . '/includes/session_config.php';
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // If already logged in, redirect to dashboard
 if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
-    header("Location: dashboard/index.php");
+    header("Location: /dashboard/index.php");
     exit;
 }
 
@@ -25,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_name'] = 'Administrator';
         $_SESSION['user_email'] = 'admin@enterprise.dwh';
         $_SESSION['user_role'] = 'BI Architect';
-        header("Location: dashboard/index.php");
+        header("Location: /dashboard/index.php");
         exit;
     } else {
         $error = 'Username atau password salah!';

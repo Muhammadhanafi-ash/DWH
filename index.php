@@ -8,9 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
-    header("Location: /DWH/dashboard/index.php");
+    header("Location: dashboard/index.php");
     exit;
 } else {
-    header("Location: /DWH/login.php");
+    header("Location: login.php");
     exit;
 }

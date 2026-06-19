@@ -4,7 +4,7 @@
 php_errors.log
 
 # Config files with sensitive info
-config/database.php
+# (database.php is now safe to commit as it uses env vars)
 
 # IDE
 .vscode/

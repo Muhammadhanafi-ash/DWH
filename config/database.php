@@ -8,11 +8,11 @@ class Database {
     
     // Connection Parameters
     private static $config = [
-        'host' => 'localhost',
-        'port' => '5432',
-        'dbname' => 'sakila',
+        'host' => 'gondola.proxy.rlwy.net',
+        'port' => '19651',
+        'dbname' => 'railway',
         'username' => 'postgres',
-        'password' => 'fathan1234'
+        'password' => 'JRPbgJxWasoPBrNHRzIQKNNEKYAVoQAO'
     ];
 
     /**

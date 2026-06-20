@@ -69,11 +69,11 @@ $activeFactTable = $_GET['fact_table'] ?? (!empty($factTables) ? $factTables[0][
                 <label class="filter-label mb-2 d-block">5. Jumlah Data Ditampilkan</label>
                 <div class="d-flex flex-wrap gap-1" id="limit-btn-group" role="group">
                     <button type="button" class="btn limit-btn" data-limit="5">5</button>
+                    <button type="button" class="btn limit-btn" data-limit="10">10</button>
+                    <button type="button" class="btn limit-btn" data-limit="15">15</button>
+                    <button type="button" class="btn limit-btn" data-limit="20">20</button>
                     <button type="button" class="btn limit-btn" data-limit="25">25</button>
-                    <button type="button" class="btn limit-btn" data-limit="50">50</button>
-                    <button type="button" class="btn limit-btn" data-limit="100">100</button>
-                    <button type="button" class="btn limit-btn" data-limit="200">200</button>
-                    <button type="button" class="btn limit-btn limit-btn-active" data-limit="all">Semua</button>
+                    <button type="button" class="btn limit-btn limit-btn-active" data-limit="30">30</button>
                 </div>
             </div>
         </div>
@@ -178,7 +178,7 @@ $activeFactTable = $_GET['fact_table'] ?? (!empty($factTables) ? $factTables[0][
         };
 
         let activeChart   = null;
-        let selectedLimit = 'all';   // default: show all
+        let selectedLimit = '30';   // default: 30
         let lastFullDataset = [];    // cache full API result to avoid re-fetching on limit change
         let lastTitleText   = '';
         let lastChartType   = 'bar';
@@ -209,7 +209,11 @@ $activeFactTable = $_GET['fact_table'] ?? (!empty($factTables) ? $factTables[0][
 
             if (rawDataset.length > 0) {
                 categories = rawDataset.map(i => i.category || i.period || i.region || i.rating || i.title || i.actor || i.staff || 'N/A');
-                values     = rawDataset.map(i => parseFloat(i.val) || 0);
+                const isAvg = $('#vis-aggregation').val() === 'avg_duration';
+                values     = rawDataset.map(i => {
+                    const parsed = parseFloat(i.val) || 0;
+                    return isAvg ? Math.round(parsed * 10) / 10 : Math.round(parsed);
+                });
             }
 
             // No data
@@ -280,13 +284,20 @@ $activeFactTable = $_GET['fact_table'] ?? (!empty($factTables) ? $factTables[0][
                     labels: {
                         style: { colors: labelColor, fontFamily: 'Outfit', fontSize: n > 30 ? '10px' : '12px' },
                         rotate: rotateDeg,
+                        rotateAlways: rotateDeg !== 0,
                         trim: false,
-                        maxHeight: rotateDeg !== 0 ? 90 : 60
+                        maxHeight: rotateDeg !== 0 ? 120 : 60
                     },
                     tickPlacement: 'on'
                 },
                 yaxis: {
-                    labels: { style: { colors: labelColor, fontFamily: 'Outfit' } },
+                    labels: { 
+                        style: { colors: labelColor, fontFamily: 'Outfit' },
+                        formatter: function(val) {
+                            const isAvg = $('#vis-aggregation').val() === 'avg_duration';
+                            return isAvg ? val.toFixed(1) : Math.round(val);
+                        }
+                    },
                     title: {
                         text: yLabel || '',
                         style: { color: labelColor, fontFamily: 'Outfit', fontSize: '12px', fontWeight: 600 },
@@ -295,8 +306,22 @@ $activeFactTable = $_GET['fact_table'] ?? (!empty($factTables) ? $factTables[0][
                 },
                 grid: { borderColor: gridColor },
                 legend: { labels: { colors: labelColor }, position: 'bottom', fontSize: '12px' },
-                dataLabels: { enabled: n <= 30 },
-                tooltip: { theme: theme }
+                dataLabels: { 
+                    enabled: n <= 30,
+                    formatter: function(val) {
+                        const isAvg = $('#vis-aggregation').val() === 'avg_duration';
+                        return isAvg ? val.toFixed(1) : Math.round(val);
+                    }
+                },
+                tooltip: { 
+                    theme: theme,
+                    y: {
+                        formatter: function(val) {
+                            const isAvg = $('#vis-aggregation').val() === 'avg_duration';
+                            return isAvg ? val.toFixed(1) : Math.round(val);
+                        }
+                    }
+                }
             };
 
             if (chartType === 'bar') {
@@ -306,9 +331,21 @@ $activeFactTable = $_GET['fact_table'] ?? (!empty($factTables) ? $factTables[0][
                 chartOptions.chart.type = 'bar';
                 chartOptions.series = [{ name: 'Metrik', data: values }];
                 chartOptions.plotOptions = { bar: { horizontal: true, borderRadius: 4, barHeight: n > 50 ? '60%' : '70%' } };
-                chartOptions.dataLabels = { enabled: n <= 50 };
+                chartOptions.dataLabels = { 
+                    enabled: n <= 50,
+                    formatter: function(val) {
+                        const isAvg = $('#vis-aggregation').val() === 'avg_duration';
+                        return isAvg ? val.toFixed(1) : Math.round(val);
+                    }
+                };
                 chartOptions.xaxis = {
-                    labels: { style: { colors: labelColor, fontFamily: 'Outfit' } },
+                    labels: { 
+                        style: { colors: labelColor, fontFamily: 'Outfit' },
+                        formatter: function(val) {
+                            const isAvg = $('#vis-aggregation').val() === 'avg_duration';
+                            return isAvg ? val.toFixed(1) : Math.round(val);
+                        }
+                    },
                     title: {
                         text: yLabel || '',
                         style: { color: labelColor, fontFamily: 'Outfit', fontSize: '12px', fontWeight: 600 }

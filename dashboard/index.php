@@ -127,82 +127,16 @@ try {
     </div>
 </div>
 
-<!-- Filters Panel -->
-<div class="filter-section">
-    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-        <h6 class="mb-0 fw-bold"><i class="fa-solid fa-sliders text-primary me-2"></i>Filter Interaktif</h6>
-        <button class="btn btn-link btn-sm p-0 text-decoration-none" id="clear-filters">Reset Filter</button>
-    </div>
-    
-    <div class="row g-3">
-        <!-- Active Fact Table -->
-        <div class="col-md-3 col-sm-6">
-            <label class="filter-label" for="filter-fact">Active Fact Table</label>
-            <select class="filter-input form-select" id="filter-fact">
-                <?php foreach ($factTables as $ft): ?>
-                    <option value="<?php echo htmlspecialchars($ft['name']); ?>" <?php echo $activeFactTable === $ft['name'] ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($ft['name']); ?> (<?php echo number_format($ft['rows']); ?> rows)
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        
-        <!-- Year -->
-        <div class="col-md-2 col-sm-6">
-            <label class="filter-label" for="filter-year">Tahun</label>
-            <select class="filter-input form-select" id="filter-year">
-                <option value="">Semua Tahun</option>
-                <?php foreach ($filterYears as $year): ?>
-                    <option value="<?php echo $year; ?>"><?php echo $year; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        
-        <!-- Month -->
-        <div class="col-md-2 col-sm-6">
-            <label class="filter-label" for="filter-month">Bulan</label>
-            <select class="filter-input form-select" id="filter-month">
-                <option value="">Semua Bulan</option>
-                <?php foreach ($filterMonths as $m): ?>
-                    <option value="<?php echo $m['month']; ?>"><?php echo htmlspecialchars($m['month_name']); ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        
-        <!-- Category -->
-        <div class="col-md-2 col-sm-6">
-            <label class="filter-label" for="filter-category">Kategori Film</label>
-            <select class="filter-input form-select" id="filter-category">
-                <option value="">Semua Kategori</option>
-                <?php foreach ($filterCategories as $cat): ?>
-                    <option value="<?php echo htmlspecialchars($cat); ?>"><?php echo htmlspecialchars($cat); ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        
-        <!-- Region -->
-        <div class="col-md-3 col-sm-6">
-            <label class="filter-label" for="filter-region">Wilayah / Negara</label>
-            <select class="filter-input form-select" id="filter-region">
-                <option value="">Semua Wilayah</option>
-                <?php foreach ($filterRegions as $reg): ?>
-                    <option value="<?php echo htmlspecialchars($reg); ?>"><?php echo htmlspecialchars($reg); ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-    </div>
-    
-    <div class="row g-2 mt-2">
-        <div class="col-md-6">
-            <label class="filter-label">Rentang Tanggal</label>
-            <div class="d-flex align-items-center gap-2">
-                <input type="date" class="filter-input" id="filter-start-date" placeholder="Tanggal Mulai">
-                <span class="text-muted">s/d</span>
-                <input type="date" class="filter-input" id="filter-end-date" placeholder="Tanggal Akhir">
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Hidden input fields to prevent JS/AJAX errors from missing filter selectors -->
+<input type="hidden" id="filter-fact" value="fact_store_performance">
+<input type="hidden" id="filter-year" value="">
+<input type="hidden" id="filter-month" value="">
+<input type="hidden" id="filter-category" value="">
+<input type="hidden" id="filter-region" value="">
+<input type="hidden" id="filter-start-date" value="">
+<input type="hidden" id="filter-end-date" value="">
+
+
 
 <!-- KPI Cards -->
 <div class="row g-4 mb-4">
@@ -342,25 +276,11 @@ try {
     </div>
 </div>
 
-<!-- Data Table Panel -->
-<div class="custom-card position-relative mb-4" id="card-data-table">
+<!-- Actor Performance Chart Panel -->
+<div class="custom-card position-relative mb-4" id="card-actor-chart">
     <div class="loading-overlay active"><div class="spinner-border text-primary" role="status"></div></div>
-    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
-        <h5 class="card-title mb-0 fw-bold"><i class="fa-solid fa-table-list text-primary me-2"></i>Dataset Detail Fact Table</h5>
-        <div class="dt-buttons-container"></div>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle" id="dwh-data-table" style="width: 100%;">
-            <thead>
-                <tr id="table-headers">
-                    <!-- Loaded dynamically via JS -->
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Loaded via AJAX Server Side -->
-            </tbody>
-        </table>
-    </div>
+    <h5 class="card-title mb-3 fw-bold"><i class="fa-solid fa-user-tie text-primary me-2"></i>Performa Aktor Terpopuler (Penyewaan)</h5>
+    <div id="actor-performance-chart" style="height: 380px;"></div>
 </div>
 
 <!-- Load dashboard Controller script at the end of body -->

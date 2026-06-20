@@ -3,8 +3,6 @@
  * Enterprise DWH Dashboard - Logout Utility
  */
 
-require_once __DIR__ . '/includes/session_config.php';
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

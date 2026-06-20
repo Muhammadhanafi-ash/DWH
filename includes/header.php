@@ -95,6 +95,13 @@ $userInitials = substr($userInitials, 0, 2);
                     </a>
                 </li>
                 
+                <li class="menu-item <?php echo isPageActive('/performance/'); ?>">
+                    <a href="/performance/index.php" class="menu-link">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <span>Query Performance</span>
+                    </a>
+                </li>
+                
                 <li class="menu-item" style="border-top: 1px solid rgba(255,255,255,0.08); margin-top: 1rem; padding-top: 1rem;">
                     <a href="/logout.php" class="menu-link" style="color: rgba(255,255,255,0.6);">
                         <i class="fa-solid fa-right-from-bracket"></i>
@@ -118,14 +125,10 @@ $userInitials = substr($userInitials, 0, 2);
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 
-                <!-- Search -->
-                <div class="search-container d-none d-md-block">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Cari data warehouse...">
-                </div>
+
                 
                 <!-- Right Actions -->
-                <div class="nav-actions">
+                <div class="nav-actions ms-auto">
                     <!-- Notifications -->
                     <div class="dropdown">
                         <button class="nav-icon-btn dropdown-toggle" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">

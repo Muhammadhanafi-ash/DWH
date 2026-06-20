@@ -3,8 +3,6 @@
  * Enterprise DWH Dashboard - Session Management & Authentication Helper
  */
 
-require_once __DIR__ . '/session_config.php';
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -14,7 +12,11 @@ if (session_status() === PHP_SESSION_NONE) {
  */
 function checkAuth() {
     if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true) {
-        header("Location: /login.php");
+        // Compute path to login page dynamically
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
+        $host = $_SERVER['HTTP_HOST'];
+        // Path should lead to /login.php
+        header("Location: " . $protocol . $host . "/login.php");
         exit;
     }
 }

@@ -6,32 +6,24 @@
 class Database {
     private static $conn = null;
     
-    // Connection Parameters — uses Railway env vars with fallback to defaults
-    private static $config = null;
-
-    private static function loadConfig() {
-        if (self::$config === null) {
-            self::$config = [
-                'host'     => getenv('PGHOST')     ?: 'gondola.proxy.rlwy.net',
-                'port'     => getenv('PGPORT')     ?: '19651',
-                'dbname'   => getenv('PGDATABASE') ?: 'railway',
-                'username' => getenv('PGUSER')     ?: 'postgres',
-                'password' => getenv('PGPASSWORD') ?: 'JRPbgJxWasoPBrNHRzIQKNNEKYAVoQAO'
-            ];
-        }
-        return self::$config;
-    }
+    // Connection Parameters
+    private static $config = [
+        'host' => 'localhost',
+        'port' => '5432',
+        'dbname' => 'sakila',
+        'username' => 'postgres',
+        'password' => 'fathan1234'
+    ];
 
     /**
      * Retrieve global PDO Connection instance (Singleton).
      */
     public static function getConnection() {
         if (self::$conn === null) {
-            $cfg = self::loadConfig();
-            $dsn = "pgsql:host=" . $cfg['host'] . ";port=" . $cfg['port'] . ";dbname=" . $cfg['dbname'];
+            $dsn = "pgsql:host=" . self::$config['host'] . ";port=" . self::$config['port'] . ";dbname=" . self::$config['dbname'];
             
             try {
-                self::$conn = new PDO($dsn, $cfg['username'], $cfg['password'], [
+                self::$conn = new PDO($dsn, self::$config['username'], self::$config['password'], [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
@@ -51,6 +43,6 @@ class Database {
     }
 
     public static function getConfig() {
-        return self::loadConfig();
+        return self::$config;
     }
 }

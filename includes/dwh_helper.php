@@ -527,10 +527,14 @@ class DWHHelper {
 
         // 2. Trend Line Chart (Over time - requires dim_date)
         if ($hasDateDim) {
+            $selectCols = "d_dim_date.month_name AS period, d_dim_date.month, d_dim_date.year, {$metricCol} AS val";
+            if ($factTable === 'fact_store_performance') {
+                $selectCols = "d_dim_date.month_name AS period, d_dim_date.month, d_dim_date.year, SUM(f.total_sales) AS val_sales, SUM(f.total_rentals) AS val_rentals";
+            }
             $qInfo = self::buildDynamicQuery(
                 $factTable, 
                 $filters, 
-                "d_dim_date.month_name AS period, d_dim_date.month, d_dim_date.year, {$metricCol} AS val", 
+                $selectCols, 
                 "d_dim_date.month_name, d_dim_date.month, d_dim_date.year", 
                 "d_dim_date.year ASC, d_dim_date.month ASC"
             );
@@ -671,7 +675,7 @@ class DWHHelper {
     }
 
     /**
-     * Automatically generate business insights based on datasets.
+     * Automatically generate business insights based on datasets and selected filters.
      */
     public static function getBusinessInsights($factTable, $filters = []) {
         $charts = self::getCharts($factTable, $filters);
@@ -679,39 +683,129 @@ class DWHHelper {
         
         $insights = [];
 
-        // Insight 1: Top Category
-        if (!empty($charts['category_comparison'])) {
-            $topCat = $charts['category_comparison'][0];
-            $topCatName = $topCat['category'] ?? 'N/A';
-            $topCatVal = number_format($topCat['val'], 2);
-            $insights[] = "Kategori film <strong>{$topCatName}</strong> memiliki kontribusi performa tertinggi di data warehouse saat ini.";
+        // Build descriptive Indonesian filter text for context awareness
+        $filterParts = [];
+        if (!empty($filters['year'])) {
+            $filterParts[] = "tahun <strong>" . htmlspecialchars($filters['year']) . "</strong>";
+        }
+        if (!empty($filters['category'])) {
+            $filterParts[] = "kategori <strong>" . htmlspecialchars($filters['category']) . "</strong>";
+        }
+        if (!empty($filters['region'])) {
+            $filterParts[] = "wilayah/negara <strong>" . htmlspecialchars($filters['region']) . "</strong>";
         }
 
-        // Insight 2: Top Film Title
+        if (!empty($filterParts)) {
+            $contextText = " pada " . implode(", ", $filterParts);
+        } else {
+            $contextText = " secara keseluruhan (tanpa filter)";
+        }
+
+        // Determine if filters are active to avoid redundant insights
+        $isCategoryFiltered = !empty($filters['category']);
+        $isRegionFiltered = !empty($filters['region']);
+
+        // Helper to format values based on whether the table is sales-based
+        $isSales = ($factTable === 'fact_sales' || $factTable === 'fact_store_performance');
+        $formatVal = function($val) use ($isSales) {
+            if ($isSales) {
+                return '$' . number_format($val, 2);
+            }
+            return number_format($val, 0) . " unit";
+        };
+
+        // 1. TOP ACTOR INSIGHT (For fact_actor_performance)
+        if ($factTable === 'fact_actor_performance' && !empty($charts['actor_comparison'])) {
+            $topActor = $charts['actor_comparison'][0];
+            $actorName = $topActor['actor'] ?? 'N/A';
+            $actorVal = number_format($topActor['val'], 0);
+            $insights[] = "Aktor/Aktris <strong>{$actorName}</strong> memiliki tingkat popularitas sewa film tertinggi dengan total <strong>{$actorVal}</strong> kali rental{$contextText}.";
+        }
+
+        // 2. TOP STAFF INSIGHT (For fact_store_performance)
+        if ($factTable === 'fact_store_performance' && !empty($charts['staff_comparison'])) {
+            $topStaff = $charts['staff_comparison'][0];
+            $staffName = $topStaff['staff'] ?? 'N/A';
+            $staffVal = number_format($topStaff['val'], 2);
+            $insights[] = "Staff/Pegawai <strong>{$staffName}</strong> mencatat performa pelayanan tertinggi dengan total kontribusi sebesar <strong>$" . $staffVal . "</strong>{$contextText}.";
+        }
+
+        // 3. TOP CATEGORY INSIGHT (Skip if already filtered by category)
+        if (!$isCategoryFiltered && !empty($charts['category_comparison'])) {
+            $topCat = $charts['category_comparison'][0];
+            $topCatName = $topCat['category'] ?? 'N/A';
+            $topCatVal = $formatVal($topCat['val']);
+            
+            if ($factTable === 'fact_sales') {
+                $insights[] = "Genre film <strong>{$topCatName}</strong> menghasilkan performa penjualan tertinggi sebesar <strong>{$topCatVal}</strong>{$contextText}.";
+            } else if ($factTable === 'fact_rental') {
+                $insights[] = "Kategori film <strong>{$topCatName}</strong> paling diminati oleh pelanggan dengan total sewa sebanyak <strong>{$topCatVal}</strong>{$contextText}.";
+            } else {
+                $insights[] = "Kategori film <strong>{$topCatName}</strong> mencatatkan kontribusi performa terbesar yaitu <strong>{$topCatVal}</strong>{$contextText}.";
+            }
+        }
+
+        // 4. TOP ITEM/FILM INSIGHT
         if (!empty($charts['top_films'])) {
             $topFilm = $charts['top_films'][0];
             $topFilmTitle = $topFilm['title'] ?? 'N/A';
-            $topFilmVal = number_format($topFilm['val'], 0);
-            $insights[] = "Judul film <strong>{$topFilmTitle}</strong> merupakan item terpopuler dengan total record aktivitas mencapai <strong>{$topFilmVal}</strong> unit transaksi.";
+            $topFilmVal = $formatVal($topFilm['val']);
+
+            if ($factTable === 'fact_sales') {
+                $insights[] = "Judul film <strong>{$topFilmTitle}</strong> merupakan produk terlaris dengan total perolehan transaksi sebesar <strong>{$topFilmVal}</strong>{$contextText}.";
+            } else if ($factTable === 'fact_rental') {
+                $insights[] = "Film <strong>{$topFilmTitle}</strong> merupakan item terpopuler yang paling banyak disewa yaitu sebanyak <strong>{$topFilmVal}</strong>{$contextText}.";
+            } else if ($factTable === 'fact_inventory') {
+                $insights[] = "Stok barang fisik terbanyak ada pada film <strong>{$topFilmTitle}</strong> dengan jumlah persediaan sebanyak <strong>{$topFilmVal}</strong>{$contextText}.";
+            } else {
+                $insights[] = "Film <strong>{$topFilmTitle}</strong> mencatatkan aktivitas record tertinggi sebesar <strong>{$topFilmVal}</strong>{$contextText}.";
+            }
         }
 
-        // Insight 3: Regional performance
-        if (!empty($charts['region_distribution'])) {
+        // 5. REGIONAL INSIGHT (Skip if already filtered by region)
+        if (!$isRegionFiltered && !empty($charts['region_distribution'])) {
             $topRegion = $charts['region_distribution'][0];
             $topRegionName = $topRegion['region'] ?? 'N/A';
-            $insights[] = "Wilayah/Negara <strong>{$topRegionName}</strong> terdeteksi memiliki intensitas aktivitas bisnis paling tinggi dibandingkan area operasional lainnya.";
+            $topRegionVal = $formatVal($topRegion['val']);
+            
+            if ($factTable === 'fact_sales') {
+                $insights[] = "Wilayah/Negara <strong>{$topRegionName}</strong> menyumbang kontribusi penjualan terbesar senilai <strong>{$topRegionVal}</strong>{$contextText}.";
+            } else if ($factTable === 'fact_store_performance') {
+                $insights[] = "Toko di wilayah/negara <strong>{$topRegionName}</strong> terdeteksi memiliki performa operasional tertinggi senilai <strong>{$topRegionVal}</strong>{$contextText}.";
+            } else {
+                $insights[] = "Wilayah <strong>{$topRegionName}</strong> memiliki intensitas aktivitas bisnis tertinggi yaitu <strong>{$topRegionVal}</strong>{$contextText}.";
+            }
         }
 
-        // Insight 4: Summary Stat Insight
+        // 6. SUMMARY STATISTICS INSIGHT
         if (!empty($stats) && isset($stats['avg_val'])) {
-            $avg = number_format($stats['avg_val'], 2);
-            $max = number_format($stats['max_val'], 2);
-            $insights[] = "Rata-rata metrik transaksi per record adalah <strong>{$avg}</strong>, dengan nilai tertinggi tercatat mencapai <strong>{$max}</strong>.";
+            $avgVal = $formatVal($stats['avg_val']);
+            $maxVal = $formatVal($stats['max_val']);
+            $minVal = $formatVal($stats['min_val']);
+            $totalCount = number_format($stats['count_val'], 0);
+            
+            if ($factTable === 'fact_sales') {
+                $insights[] = "Rata-rata nilai penjualan adalah <strong>{$avgVal}</strong> per transaksi, dengan transaksi tertinggi mencapai <strong>{$maxVal}</strong> dan transaksi terendah <strong>{$minVal}</strong>{$contextText}.";
+            } else if ($factTable === 'fact_rental') {
+                $insights[] = "Setiap film disewa rata-rata sebanyak <strong>{$avgVal}</strong>, dengan nilai sewa puncak per item sebanyak <strong>{$maxVal}</strong> dari total <strong>{$totalCount}</strong> catatan sewa{$contextText}.";
+            } else if ($factTable === 'fact_inventory') {
+                $insights[] = "Jumlah rata-rata stok barang per film adalah <strong>{$avgVal}</strong> unit, dengan kapasitas penyimpanan maksimal <strong>{$maxVal}</strong> unit per item{$contextText}.";
+            } else {
+                $insights[] = "Rata-rata metrik record transaksi adalah <strong>{$avgVal}</strong>, dengan nilai record tertinggi mencapai <strong>{$maxVal}</strong>{$contextText}.";
+            }
+        }
+
+        // 7. SPECIFIC FILTER ADAPTATION INSIGHT
+        if ($isCategoryFiltered && !empty($filters['category'])) {
+            $insights[] = "Analisis terfokus pada genre <strong>" . htmlspecialchars($filters['category']) . "</strong> menunjukkan persebaran aktivitas rental dan tren penjualan yang lebih spesifik{$contextText}.";
+        }
+        if ($isRegionFiltered && !empty($filters['region'])) {
+            $insights[] = "Analisis regional khusus untuk <strong>" . htmlspecialchars($filters['region']) . "</strong> mengisolasi data kinerja pelanggan lokal dari daerah lainnya{$contextText}.";
         }
 
         // Default fallback if no data
         if (empty($insights)) {
-            $insights[] = "Data warehouse belum memiliki record yang memadai untuk dikalkulasi menjadi insight otomatis. Silakan periksa koneksi database Anda.";
+            $insights[] = "Data warehouse belum memiliki record yang memadai untuk dikalkulasi menjadi insight otomatis pada filter ini.";
         }
 
         return $insights;
